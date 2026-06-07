@@ -7,6 +7,7 @@ from google import genai
 from prompts.travel_prompt import TRAVEL_PROMPT
 from dotenv import load_dotenv
 import os
+from app.routes.story import router as story_router
 
 
 load_dotenv()
@@ -33,6 +34,9 @@ client = genai.Client(
 
 class ChatRequest(BaseModel):
     message: str
+
+
+app.include_router(story_router)
 
 
 @app.get("/")

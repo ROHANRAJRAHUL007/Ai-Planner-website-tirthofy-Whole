@@ -5,4 +5,4 @@ python-dotenv
 motor
 requests
 pymongo
-google-generativeai
+google-genai
