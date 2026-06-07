@@ -3,11 +3,17 @@ import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from google import genai
 from prompts.travel_prompt import TRAVEL_PROMPT
 from dotenv import load_dotenv
 import os
 from app.routes.story import router as story_router
+
+try:
+    from google import genai as google_genai
+    GENAI_SDK = "modern"
+except ImportError:
+    import google.generativeai as google_genai
+    GENAI_SDK = "legacy"
 
 
 load_dotenv()
@@ -27,9 +33,13 @@ app.add_middleware(
 )
 
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+
+if GENAI_SDK == "modern":
+    client = google_genai.Client(api_key=gemini_api_key)
+else:
+    google_genai.configure(api_key=gemini_api_key)
+    client = google_genai.GenerativeModel("gemini-2.5-flash-lite")
 
 
 class ChatRequest(BaseModel):
@@ -48,23 +58,29 @@ def home():
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
+    if GENAI_SDK == "modern":
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=[
+                TRAVEL_PROMPT,
+                req.message
+            ]
+        )
+        response_text = response.text
+    else:
+        response = client.generate_content(
+            [TRAVEL_PROMPT, req.message]
+        )
+        response_text = getattr(response, "text", None)
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash-lite",
-        contents=[
-            TRAVEL_PROMPT,
-            req.message
-        ]
-    )
-
-    if response.text is None:
+    if response_text is None:
         raise HTTPException(
             status_code=500,
             detail="Empty Gemini response"
         )
 
     clean_text = (
-        response.text
+        response_text
         .replace("```json", "")
         .replace("```", "")
         .strip()
