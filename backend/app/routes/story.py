@@ -8,11 +8,11 @@ router = APIRouter()
 @router.post("/stories")
 async def create_story(story: StoryCreate):
 
-    result = await stories_collection.insert_one(
-        story.dict()
-    )
+    story_data = story.model_dump()
+
+    saved_story = await stories_collection.insert_one(story_data)
 
     return {
-        "id": str(result.inserted_id),
-        "message": "Story created"
+        "id": str(saved_story.inserted_id),
+        "message": "Story created successfully"
     }
