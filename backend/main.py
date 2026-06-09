@@ -2,8 +2,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-
+from app.routes import temple
 from google import genai
+from app.routes import search
 
 import os
 import json
@@ -49,8 +50,15 @@ class ChatRequest(BaseModel):
 # story routes
 app.include_router(story_router)
 
-
+app.include_router(
+    temple.router
+)
+app.include_router(
+    search.router
+)
 # health check route
+
+
 @app.get("/")
 def home():
     return {

@@ -7,4 +7,7 @@ load_dotenv()
 MONGO_URL = os.getenv("MONGO_URL")
 
 client = AsyncIOMotorClient(MONGO_URL)
+
+
 db = client["tripplanner"]
+temple_collection = db["temples"]
