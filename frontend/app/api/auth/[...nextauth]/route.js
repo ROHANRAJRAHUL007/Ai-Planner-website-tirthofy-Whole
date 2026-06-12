@@ -1,6 +1,9 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
+
+
+
 const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
 
@@ -14,7 +17,7 @@ const handler = NextAuth({
   callbacks: {
     async signIn({ user }) {
       try {
-        const res = await fetch("http://127.0.0.1:8000/users", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
