@@ -1,15 +1,39 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import GoogleProvider from "next-auth/providers/google";
 
 const handler = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "",
+  secret: process.env.NEXTAUTH_SECRET,
+
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+
+  callbacks: {
+    async signIn({ user }) {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            name: user.name,
+            email: user.email,
+          }),
+        });
+
+        console.log("FASTAPI STATUS:", res.status);
+      } catch (error) {
+        console.log("FASTAPI ERROR:", error);
+      }
+
+      return true;
+    },
+  },
 });
 
 export { handler as GET, handler as POST };
-

@@ -1,3 +1,4 @@
+from app.routes.users import router as users_router
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -26,7 +27,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
         "https://www.tirthofy.xyz",
         "https://tirthofy.xyz"
     ],
@@ -56,6 +57,7 @@ app.include_router(
 app.include_router(
     search.router
 )
+app.include_router(users_router)
 # health check route
 
 
