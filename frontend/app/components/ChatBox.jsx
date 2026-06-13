@@ -35,32 +35,38 @@ export default function ChatBox() {
       {/* RESULT */}
       {trip && (
         <div className="mt-6 border rounded-xl p-5 space-y-4">
-          <h1 className="text-2xl font-bold">{trip.title}</h1>
+          {typeof trip === "string" ? (
+            <p className="whitespace-pre-wrap">{trip}</p>
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold">{trip.title}</h1>
 
-          <p>{trip.duration}</p>
+              <p>{trip.duration}</p>
 
-          {trip.best_time && <p>Best Time: {trip.best_time}</p>}
+              {trip.best_time && <p>Best Time: {trip.best_time}</p>}
 
-          {(trip.days ?? []).map((day, i) => (
-            <div key={i} className="border rounded-lg p-3">
-              <h2 className="font-bold">Day {day.day}</h2>
+              {(trip.days ?? []).map((day, i) => (
+                <div key={i} className="border rounded-lg p-3">
+                  <h2 className="font-bold">Day {day.day}</h2>
 
-              <p>{day.description}</p>
+                  <p>{day.description}</p>
 
-              {(day.places ?? []).map((place, j) => (
-                <div key={j}>📍 {place}</div>
+                  {(day.places ?? []).map((place, j) => (
+                    <div key={j}>📍 {place}</div>
+                  ))}
+                </div>
               ))}
-            </div>
-          ))}
 
-          {trip.tips && (
-            <div>
-              <h2 className="font-bold">Tips</h2>
+              {trip.tips && (
+                <div>
+                  <h2 className="font-bold">Tips</h2>
 
-              {(trip.tips ?? []).map((tip, i) => (
-                <p key={i}>• {tip}</p>
-              ))}
-            </div>
+                  {(trip.tips ?? []).map((tip, i) => (
+                    <p key={i}>• {tip}</p>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
