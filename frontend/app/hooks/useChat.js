@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { sendChat } from "../services/chat_api";
 
@@ -13,6 +14,7 @@ export function useChat() {
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { data: session } = useSession();
 
   async function handleSend() {
     // Prevent empty messages
@@ -26,7 +28,7 @@ export function useChat() {
       // Clear input box after successful request
       setLoading(true);
       setError("");
-      const answer = await sendChat(message);
+      const answer = await sendChat(message, session.user.email);
       setTrip(answer);
       setMessage("");
       ////////////////////////////////////////////////

@@ -1,111 +1,77 @@
-from app.routes.users import router as users_router
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from dotenv import load_dotenv
-from app.routes import temple
-from google import genai
-from app.routes import search
 
-import os
-import json
 
-from prompts.travel_prompt import TRAVEL_PROMPT
+from app.routes.users import router as users_router
 from app.routes.story import router as story_router
+from app.routes import temple
+from app.routes import search
+from app.routes import chat
 
 
-# load environment variables
+# load env
 load_dotenv()
 
 
-# create FastAPI app
+# create app
 app = FastAPI()
 
 
-# allow frontend connection
+# CORS
 app.add_middleware(
+
     CORSMiddleware,
+
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://www.tirthofy.xyz",
         "https://tirthofy.xyz"
     ],
+
     allow_credentials=True,
+
     allow_methods=["*"],
+
     allow_headers=["*"]
+
 )
 
 
-# Gemini client
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
+# ROUTES
+
+app.include_router(
+    users_router
 )
 
 
-# request body model
-class ChatRequest(BaseModel):
-    message: str
+app.include_router(
+    story_router
+)
 
-
-# story routes
-app.include_router(story_router)
 
 app.include_router(
     temple.router
 )
+
+
 app.include_router(
     search.router
 )
-app.include_router(users_router)
-# health check route
 
 
+app.include_router(
+    chat.router
+)
+
+
+# health check
 @app.get("/")
 def home():
+
     return {
+
         "message": "AI Planner backend running 🚀"
+
     }
-
-
-# chat API
-@app.post("/chat")
-async def chat(req: ChatRequest):
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash-lite",
-        contents=[
-            TRAVEL_PROMPT,
-            req.message
-        ]
-    )
-
-    response_text = response.text
-
-    if not response_text:
-        raise HTTPException(
-            status_code=500,
-            detail="Empty Gemini response"
-        )
-
-    # clean Gemini markdown
-    clean_text = (
-        response_text
-        .replace("```json", "")
-        .replace("```", "")
-        .strip()
-    )
-
-    # convert string JSON to Python dict
-    try:
-        data = json.loads(clean_text)
-        return data
-
-    except json.JSONDecodeError:
-        raise HTTPException(
-            status_code=500,
-            detail={
-                "error": "Invalid JSON from Gemini",
-                "raw": clean_text
-            }
-        )

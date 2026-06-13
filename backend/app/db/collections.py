@@ -6,3 +6,6 @@ stories_collection = db["stories"]
 
 temple_collection = db["temples"]
 semantic_cache_collection = db["semantic_cache"]
+
+# add this
+chats_collection = db["chats"]
