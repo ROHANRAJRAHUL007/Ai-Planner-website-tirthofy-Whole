@@ -1,7 +1,6 @@
 "use client";
 
-import { useChat } from "../hooks/useChat";
-
+import { useChat } from "../../hooks/useChat";
 import ChatInput from "./ChatInput";
 import ErrorMessage from "./ErrorMessage";
 import LoadingMessage from "./LoadingMessage";
