@@ -1,5 +1,5 @@
 from app.services.vector_search import search_temples
-from backend.prompts.temple_prompts import temple_prompt
+from prompts.temple_prompts import temple_prompt
 from app.core.gemini import ask_gemini
 
 
