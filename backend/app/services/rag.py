@@ -1,19 +1,6 @@
-import os
-
-from google import genai
-from dotenv import load_dotenv
-
 from app.services.vector_search import search_temples
-
-
-load_dotenv()
-
-
-client = genai.Client(
-    api_key=os.getenv(
-        "GEMINI_API_KEY"
-    )
-)
+from backend.prompts.temple_prompts import temple_prompt
+from app.core.gemini import ask_gemini
 
 
 async def ask_ai(question):
@@ -28,33 +15,21 @@ async def ask_ai(question):
 
         context += f"""
 
-        Name:
-        {temple['name']}
+Name:
+{temple['name']}
 
-        History:
-        {temple['history']}
+History:
+{temple['history']}
 
-        """
+"""
 
-    prompt = f"""
-
-    Answer using temple data.
-
-    DATA:
-    {context}
-
-
-    USER QUESTION:
-    {question}
-
-    """
-
-    response = client.models.generate_content(
-
-        model="gemini-2.5-flash",
-
-        contents=prompt
-
+    prompt = temple_prompt(
+        context,
+        question
     )
 
-    return response.text
+    answer = ask_gemini(
+        prompt
+    )
+
+    return answer

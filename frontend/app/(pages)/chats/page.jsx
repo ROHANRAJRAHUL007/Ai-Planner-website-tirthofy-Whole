@@ -12,6 +12,8 @@ export default function ChatsPage() {
 
   useEffect(() => {
     if (session?.user?.email) {
+      // Load chat history only after auth has resolved with
+      // a real user email.
       getChats(session.user.email).then((data) => {
         if (Array.isArray(data)) {
           setChats(data);

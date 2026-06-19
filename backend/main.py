@@ -4,8 +4,7 @@ from dotenv import load_dotenv
 
 
 from app.routes.users import router as users_router
-from app.routes.story import router as story_router
-from app.routes import temple
+
 from app.routes import search
 from app.routes import chat
 
@@ -43,16 +42,6 @@ app.add_middleware(
 
 app.include_router(
     users_router
-)
-
-
-app.include_router(
-    story_router
-)
-
-
-app.include_router(
-    temple.router
 )
 
 

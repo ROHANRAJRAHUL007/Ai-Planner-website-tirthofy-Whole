@@ -18,13 +18,18 @@ export function useChat() {
     try {
       setLoading(true);
       setError("");
+
+      // The backend stores chats per signed-in user, so block anonymous sends.
       if (!session) {
         setError("Please login first");
         return;
       }
+
+      // The current backend returns plain text in `answer`, but the UI also
+      // supports a structured trip object if that response shape changes later.
       const data = await sendChat(message, session.user.email);
 
-      // backend response -> {answer, chatId}
+      // backend response -> { answer, chatId }
       setTrip(data.answer);
 
       setMessage("");
