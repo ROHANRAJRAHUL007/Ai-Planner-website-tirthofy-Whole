@@ -1,29 +1,10 @@
-from app.services.rag import ask_ai
-
-from app.repositories.chat_repository import save_chat
+from app.chains.temple_chain import ask_tirthofy
 
 
-async def create_chat(
-        email,
-        message
-):
+async def chat_with_ai(message: str):
 
-    # get AI answer
-    answer = await ask_ai(
+    response = await ask_tirthofy(
         message
     )
 
-    # save conversation
-    chat_id = await save_chat(
-        email,
-        message,
-        answer
-    )
-
-    return {
-
-        "answer": answer,
-
-        "chatId": chat_id
-
-    }
+    return response
