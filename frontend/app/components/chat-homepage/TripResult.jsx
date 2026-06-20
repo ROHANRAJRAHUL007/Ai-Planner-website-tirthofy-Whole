@@ -3,25 +3,32 @@ export default function TripResult({ trip }) {
     return <p>No trip found</p>;
   }
 
+  const days = trip.days || [];
+  const tips = trip.tips || [];
+
   return (
     <div>
-      <h1>{trip.title}</h1>
+      <h1>{trip.title || "Your Trip Plan"}</h1>
 
-      <p>{trip.duration}</p>
+      <p>{trip.duration || ""}</p>
 
-      <p>Best Time: {trip.best_time}</p>
+      <p>Best Time: {trip.best_time || "Any time"}</p>
 
       <h2>Days</h2>
 
-      {trip.days.map((day) => {
+      {days.length === 0 && <p>No itinerary available</p>}
+
+      {days.map((day, index) => {
+        const places = day.places || [];
+
         return (
-          <div key={day.day}>
-            <h3>Day {day.day}</h3>
+          <div key={index}>
+            <h3>Day {day.day || index + 1}</h3>
 
-            <p>{day.description}</p>
+            <p>{day.description || ""}</p>
 
-            {day.places.map((place) => {
-              return <p key={place}>📍 {place}</p>;
+            {places.map((place, i) => {
+              return <p key={i}>📍 {place}</p>;
             })}
           </div>
         );
@@ -29,8 +36,8 @@ export default function TripResult({ trip }) {
 
       <h2>Tips</h2>
 
-      {trip.tips.map((tip) => {
-        return <p key={tip}>• {tip}</p>;
+      {tips.map((tip, index) => {
+        return <p key={index}>• {tip}</p>;
       })}
     </div>
   );
