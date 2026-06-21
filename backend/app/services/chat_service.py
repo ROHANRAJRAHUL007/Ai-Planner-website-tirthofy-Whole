@@ -1,10 +1,13 @@
-from app.chains.temple_chain import ask_tirthofy
+from app.graphs.tirthofy_graph import tirthofy_graph, TirthofyState
 
 
 async def chat_with_ai(message: str):
 
-    response = await ask_tirthofy(
-        message
-    )
+    state: TirthofyState = {
+        "question": message,
+        "answer": ""
+    }
 
-    return response
+    result = await tirthofy_graph.ainvoke(state)
+
+    return result["answer"]
