@@ -11,8 +11,13 @@ export default function Home() {
         <div className="flex gap-10">
           <div className="flex-1">
             <div className="text-center mt-24 mb-12">
-              <h1 className="text-5xl font-bold mb-4">Where to today?</h1>
-              <p className="text-zinc-400">Ask me anything travel related.</p>
+              <h1 className="text-5xl font-bold mb-4">
+                Explore Sacred Temples of India
+              </h1>
+              <p className="text-zinc-400">
+                Discover temple history, darshan timings, pilgrimage routes,
+                festivals, architecture, and spiritual travel guides.
+              </p>
             </div>
 
             <ChatBox />
