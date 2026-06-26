@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-
+from app.routes.temples import router as temple_router
 
 from app.routes.users import router as users_router
 
@@ -54,8 +54,10 @@ app.include_router(
     chat.router
 )
 
-
+app.include_router(temple_router)
 # health check
+
+
 @app.get("/")
 def home():
 

@@ -1,72 +1,75 @@
+"use client";
+
+import { useState } from "react";
+import useTemples from "./hook/useTemples";
+
+import CategorySection from "./components/CategorySection";
+import HeroSection from "./components/HeroSection";
+import QuickFilters from "./components/QuickFilters";
+import TempleGrid from "./components/TempleGrid";
+
 export default function ExplorePage() {
-  const temples = [
-    {
-      id: 1,
-      name: "Tirupati Balaji Temple",
-      location: "Andhra Pradesh",
-      image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220",
-      description: "One of India's most famous temples.",
-      wiki: "https://en.wikipedia.org/wiki/Venkateswara_Temple,_Tirumala",
-      map: "https://maps.google.com/?q=Tirupati+Balaji+Temple",
-    },
-    {
-      id: 2,
-      name: "Kedarnath Temple",
-      location: "Uttarakhand",
-      image:
-        "https://images.unsplash.com/photo-1712733900711-d0b929d0d7cc?w=600&auto=format&fit=crop&q=60",
-      description: "A sacred temple dedicated to Lord Shiva.",
-      wiki: "https://en.wikipedia.org/wiki/Kedarnath_Temple",
-      map: "https://maps.google.com/?q=Kedarnath+Temple",
-    },
+  const { temples, loading } = useTemples();
+
+  const [search, setSearch] = useState("");
+  const [selectedState, setSelectedState] = useState("All");
+
+  // Generate state list from MongoDB data
+  const states = [
+    "All",
+    ...new Set(temples.map((temple) => temple.state).filter(Boolean)),
   ];
 
+  // Search + State filter
+  const filteredTemples = temples.filter((temple) => {
+    const matchSearch = temple.name
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchState =
+      selectedState === "All" || temple.state === selectedState;
+
+    return matchSearch && matchState;
+  });
+
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Explore Temples</h1>
+    <main className="bg-black min-h-screen text-white px-6 py-10">
+      {/* Hero */}
+      <HeroSection search={search} setSearch={setSearch} />
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {temples.map((temple) => (
-          <div
-            key={temple.id}
-            className="border rounded-xl overflow-hidden shadow-md bg-white"
-          >
-            <img
-              src={temple.image}
-              alt={temple.name}
-              className="w-full h-56 object-cover"
-            />
+      {/* State Filters */}
+      <section className="max-w-7xl mx-auto mb-10">
+        <div className="flex flex-wrap gap-3 justify-center">
+          {states.map((state) => (
+            <button
+              key={state}
+              onClick={() => setSelectedState(state)}
+              className={`px-4 py-2 rounded-full transition ${
+                selectedState === state
+                  ? "bg-orange-600 text-white"
+                  : "bg-zinc-900 hover:bg-zinc-800"
+              }`}
+            >
+              {state}
+            </button>
+          ))}
+        </div>
+      </section>
 
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-500">{temple.name}</h2>
+      {/* Quick Filters */}
+      <QuickFilters />
+      <div className="max-w-7xl mx-auto mb-6">
+        <h2 className="text-3xl font-bold">🛕 Temples</h2>
 
-              <p className="text-gray-500">📍 {temple.location}</p>
-
-              <p className="mt-2 text-sm text-gray-700">{temple.description}</p>
-
-              <div className="flex flex-wrap gap-2 mt-4">
-                <a
-                  href={temple.wiki}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-2 bg-gray-600 rounded-md text-sm"
-                >
-                  Wikipedia
-                </a>
-
-                <a
-                  href={temple.map}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-2 bg-green-500 text-white rounded-md text-sm"
-                >
-                  Map
-                </a>
-              </div>
-            </div>
-          </div>
-        ))}
+        <p className="text-gray-400 mt-2">
+          Showing {filteredTemples.length} temples
+        </p>
       </div>
-    </div>
+      {/* Temple Cards */}
+      <TempleGrid temples={filteredTemples} loading={loading} />
+
+      {/* Categories */}
+      <CategorySection />
+    </main>
   );
 }
