@@ -3,7 +3,6 @@
 import { useState } from "react";
 import useTemples from "./hook/useTemples";
 
-import CategorySection from "./components/CategorySection";
 import HeroSection from "./components/HeroSection";
 import QuickFilters from "./components/QuickFilters";
 import TempleGrid from "./components/TempleGrid";
@@ -67,9 +66,6 @@ export default function ExplorePage() {
       </div>
       {/* Temple Cards */}
       <TempleGrid temples={filteredTemples} loading={loading} />
-
-      {/* Categories */}
-      <CategorySection />
     </main>
   );
 }

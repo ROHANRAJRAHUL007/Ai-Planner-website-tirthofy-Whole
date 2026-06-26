@@ -1,9 +1,14 @@
 import Link from "next/link";
+
 export default function TempleCard({ temple }) {
   return (
     <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-orange-500 transition-all duration-300 hover:-translate-y-1">
-      <div className="h-48 bg-gradient-to-br from-orange-700 to-red-900 flex items-center justify-center">
-        <span className="text-6xl">🛕</span>
+      <div className="h-48 overflow-hidden">
+        <img
+          src={temple.img_url || "/default-temple.jpg"}
+          alt={temple.name}
+          className="w-full h-full object-cover"
+        />
       </div>
 
       <div className="p-5">
