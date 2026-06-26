@@ -1,13 +1,15 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function TempleCard({ temple }) {
   return (
     <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-orange-500 transition-all duration-300 hover:-translate-y-1">
-      <div className="h-48 overflow-hidden">
-        <img
+      <div className="relative h-48 overflow-hidden">
+        <Image
           src={temple.img_url || "/default-temple.jpg"}
           alt={temple.name}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
         />
       </div>
 
