@@ -37,21 +37,32 @@ export default function Editor() {
     setPlaces(updated);
   }
 
-  function saveGuide() {
+  async function saveGuide() {
     const finalGuide = {
       title: guide?.title,
-
       location: guide?.location,
-
       overview,
-
       places,
     };
 
-    console.log(finalGuide);
+    try {
+      const res = await fetch("http://127.0.0.1:8000/guides", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalGuide),
+      });
 
-    // later:
-    // POST this to FastAPI + MongoDB
+      const data = await res.json();
+
+      console.log(data);
+
+      alert("Guide saved successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save guide");
+    }
   }
 
   return (

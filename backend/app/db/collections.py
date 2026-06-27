@@ -8,3 +8,4 @@ temple_collection = db["temples"]
 semantic_cache_collection = db["semantic_cache"]
 
 chats_collection = db["chats"]
+guides_collection = db["guides"]
