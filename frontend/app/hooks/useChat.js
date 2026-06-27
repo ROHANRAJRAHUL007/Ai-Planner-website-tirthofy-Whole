@@ -5,8 +5,12 @@ import { useState } from "react";
 import { sendChat } from "../services/chat_api";
 
 export function useChat() {
+  // Input value
   const [message, setMessage] = useState("");
-  const [trip, setTrip] = useState(null);
+
+  // Conversation history
+  const [messages, setMessages] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -15,28 +19,40 @@ export function useChat() {
   async function handleSend() {
     if (!message.trim()) return;
 
+    const question = message;
+
     try {
       setLoading(true);
       setError("");
 
-      // The backend stores chats per signed-in user, so block anonymous sends.
       if (!session) {
         setError("Please login first");
         return;
       }
 
-      // The current backend returns plain text in `answer`, but the UI also
-      // supports a structured trip object if that response shape changes later.
-      const data = await sendChat(message, session.user.email);
-
-      // backend response -> { answer, chatId }
-      setTrip(data.answer);
+      // Show user message
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: question,
+        },
+      ]);
 
       setMessage("");
+
+      const data = await sendChat(question, session.user.email);
+
+      // Show AI response
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          trip: data.answer,
+        },
+      ]);
     } catch (error) {
       console.log(error);
-
-      setTrip(null);
       setError("Something went wrong");
     } finally {
       setLoading(false);
@@ -46,7 +62,7 @@ export function useChat() {
   return {
     message,
     setMessage,
-    trip,
+    messages,
     loading,
     error,
     handleSend,

@@ -14,7 +14,9 @@ export default function TempleDetailPage() {
 
     const templeName = decodeURIComponent(slug).replace(/-/g, " ");
 
-    fetch(`http://127.0.0.1:8000/temples/${encodeURIComponent(templeName)}`)
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/temples/${encodeURIComponent(templeName)}`,
+    )
       .then((res) => res.json())
       .then((data) => {
         setTemple(data);

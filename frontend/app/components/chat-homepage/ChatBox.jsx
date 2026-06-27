@@ -7,29 +7,35 @@ import LoadingMessage from "./LoadingMessage";
 import TripResult from "./TripResult";
 
 export default function ChatBox() {
-  const {
-    message, // current input value
-    setMessage, // update input value
-    trip, // trip response from API
-    loading, // true while fetching data
-    error, // error message if request fails
-    handleSend, // function to send request
-  } = useChat();
+  const { message, setMessage, messages, loading, error, handleSend } =
+    useChat();
 
   return (
     <div className="w-full max-w-3xl mx-auto">
+      {messages.map((msg, index) => (
+        <div key={index} className="mb-6">
+          {msg.role === "user" ? (
+            <div className="flex justify-end">
+              <div className="bg-orange-500 text-white px-4 py-2 rounded-xl">
+                {msg.content}
+              </div>
+            </div>
+          ) : (
+            <TripResult trip={msg.trip} />
+          )}
+        </div>
+      ))}
+
+      {loading && <LoadingMessage />}
+
+      {error && <ErrorMessage error={error} />}
+
       <ChatInput
         message={message}
         setMessage={setMessage}
         loading={loading}
         handleSend={handleSend}
       />
-      {/* Show loading text while waiting for response */}
-      {loading && <LoadingMessage />}
-      {/* Show error if request fails */}
-      {error && <ErrorMessage error={error} />}
-      {/* Show trip result after successful response */}
-      <TripResult trip={trip} />
     </div>
   );
 }
