@@ -9,7 +9,7 @@ export default function InspirationPage() {
   useEffect(() => {
     async function fetchGuides() {
       try {
-        const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/guides");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guides`);
 
         const data = await res.json();
 

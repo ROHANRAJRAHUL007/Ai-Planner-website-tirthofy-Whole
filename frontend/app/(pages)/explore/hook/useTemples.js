@@ -7,7 +7,7 @@ export default function useTemples() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("${process.env.NEXT_PUBLIC_API_URL}/temples")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/temples`)
       .then((res) => res.json())
       .then((data) => {
         setTemples(data);
