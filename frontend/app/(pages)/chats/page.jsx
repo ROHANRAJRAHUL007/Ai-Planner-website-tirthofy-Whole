@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { getChats } from "../../services/chatHistory";
@@ -12,8 +13,6 @@ export default function ChatsPage() {
 
   useEffect(() => {
     if (session?.user?.email) {
-      // Load chat history only after auth has resolved with
-      // a real user email.
       getChats(session.user.email).then((data) => {
         if (Array.isArray(data)) {
           setChats(data);
@@ -25,19 +24,25 @@ export default function ChatsPage() {
   }, [session]);
 
   return (
-    <div className="p-10 bg-black min-h-screen text-white">
+    <div className="min-h-screen bg-black text-white p-10">
       <h1 className="text-3xl font-bold">Your Chats</h1>
 
       <div className="mt-6 space-y-3">
-        {chats.map((chat) => (
-          <div key={chat._id} className="bg-zinc-900 rounded-xl p-4">
-            <h2 className="font-bold">{chat.title}</h2>
+        {chats.length === 0 ? (
+          <p className="text-zinc-500">No chats found.</p>
+        ) : (
+          chats.map((chat) => (
+            <Link key={chat._id} href={`/chats/${chat._id}`}>
+              <div className="bg-zinc-900 rounded-xl p-4 hover:bg-zinc-800 transition cursor-pointer">
+                <h2 className="font-bold">{chat.title || "Untitled Chat"}</h2>
 
-            <p className="text-sm text-zinc-400">
-              {chat.messages?.[0]?.content}
-            </p>
-          </div>
-        ))}
+                <p className="text-sm text-zinc-400 mt-2 line-clamp-2">
+                  {chat.messages?.[0]?.content || "No messages yet"}
+                </p>
+              </div>
+            </Link>
+          ))
+        )}
       </div>
     </div>
   );
