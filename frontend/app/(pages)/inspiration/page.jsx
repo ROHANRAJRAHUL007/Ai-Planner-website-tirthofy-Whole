@@ -1,5 +1,6 @@
 "use client";
 
+import { getGuides } from "@/app/services/guideService";
 import { useEffect, useState } from "react";
 
 export default function InspirationPage() {
@@ -9,13 +10,11 @@ export default function InspirationPage() {
   useEffect(() => {
     async function fetchGuides() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guides`);
-
-        const data = await res.json();
-
+        const data = await getGuides();
         setPosts(data);
       } catch (err) {
         console.error(err);
+        setPosts([]);
       } finally {
         setLoading(false);
       }
@@ -63,7 +62,7 @@ export default function InspirationPage() {
 
                 <h2 className="text-2xl font-bold text-black">{post.title}</h2>
 
-                <p className="text-gray-900 mt-2">📍 {post.location}</p>
+                <p className="text-gray-900 mt-2">?? {post.location}</p>
 
                 <p className="text-gray-900 mt-4 line-clamp-3">
                   {post.overview}

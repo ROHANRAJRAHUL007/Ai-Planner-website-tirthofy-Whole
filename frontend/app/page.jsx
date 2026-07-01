@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 import ChatBox from "./components/chat-homepage/ChatBox";
 import Sidebar from "./components/sidebar/Sidebar";
 
@@ -10,7 +11,6 @@ export default function Home() {
       <div className="flex-1 p-8">
         <div className="flex gap-10">
           <div className="flex-1">
-            {/* Banner + Heading */}
             <div className="text-center mt-8 mb-10">
               <Image
                 src="/banner.png"
@@ -31,8 +31,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Chat Box */}
-            <ChatBox />
+            <ChatBox redirectOnFirstReply />
           </div>
         </div>
       </div>

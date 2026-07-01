@@ -6,9 +6,16 @@ import ErrorMessage from "./ErrorMessage";
 import LoadingMessage from "./LoadingMessage";
 import TripResult from "./TripResult";
 
-export default function ChatBox() {
-  const { message, setMessage, messages, loading, error, handleSend } =
-    useChat();
+export default function ChatBox({
+  initialMessages = [],
+  initialChatId = "",
+  redirectOnFirstReply = false,
+}) {
+  const { message, setMessage, messages, loading, error, handleSend } = useChat({
+    initialMessages,
+    initialChatId,
+    redirectOnFirstReply,
+  });
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -21,7 +28,7 @@ export default function ChatBox() {
               </div>
             </div>
           ) : (
-            <TripResult trip={msg.trip} />
+            <TripResult trip={msg.trip ?? msg.content} />
           )}
         </div>
       ))}

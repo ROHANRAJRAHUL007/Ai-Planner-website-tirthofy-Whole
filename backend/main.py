@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from app.routes.temples import router as temple_router
-from app.routes.guides import router as guide_router
+from app.routes.guide_routes import router as guide_router
 from app.routes.users import router as users_router
 
 from app.routes import search

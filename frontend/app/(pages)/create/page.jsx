@@ -1,116 +1,115 @@
 "use client";
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { getGuides, getMyGuides } from "@/app/services/guideService";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import GuideTabs from "./components/GuideTabs";
+import GuideGrid from "./components/Guidgrid";
+import ProfileHeader from "./components/ProfileHeader";
+import SearchBar from "./components/SearchBar";
+
+function normalizeValue(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function collectOwnerKeys(session) {
+  return [...new Set([
+    normalizeValue(session?.user?.email),
+    normalizeValue(session?.user?.authorId),
+  ].filter(Boolean))];
+}
+
+function mergeUniqueGuides(...guideLists) {
+  const seen = new Set();
+  const merged = [];
+
+  guideLists.flat().forEach((guide) => {
+    const key = guide?._id || `${guide?.title}-${guide?.createdAt}`;
+
+    if (!key || seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    merged.push(guide);
+  });
+
+  return merged;
+}
+
+function sortByUpdatedAt(guides) {
+  return [...guides].sort((a, b) => {
+    const aTime = new Date(a?.updatedAt || a?.createdAt || 0).getTime();
+    const bTime = new Date(b?.updatedAt || b?.createdAt || 0).getTime();
+    return bTime - aTime;
+  });
+}
 
 export default function CreatePage() {
-  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [guides, setGuides] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const images = [
-    "/travel1.avif",
-    "/travel2.avif",
-    "/travel3.avif",
-    "/travel4.avif",
-    "/travel5.avif",
-    "/travel6.avif",
-  ];
+  useEffect(() => {
+    const fetchGuides = async () => {
+      if (status === "loading") {
+        return;
+      }
+
+      const ownerKeys = collectOwnerKeys(session);
+
+      if (ownerKeys.length === 0) {
+        setGuides([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const ownGuideResponses = await Promise.all(ownerKeys.map((key) => getMyGuides(key)));
+        const ownGuides = ownGuideResponses.flatMap((response) =>
+          Array.isArray(response) ? response : response.guides || []
+        );
+
+        const allGuides = await getGuides();
+        const fallbackMatches = allGuides.filter((guide) => {
+          const guideOwnerKeys = [
+            normalizeValue(guide?.authorId),
+            normalizeValue(guide?.authorEmail),
+            ...((Array.isArray(guide?.ownerKeys) ? guide.ownerKeys : []).map(normalizeValue)),
+          ].filter(Boolean);
+
+          return ownerKeys.some((ownerKey) => guideOwnerKeys.includes(ownerKey));
+        });
+
+        setGuides(sortByUpdatedAt(mergeUniqueGuides(ownGuides, fallbackMatches)));
+      } catch (error) {
+        console.error(error);
+        setGuides([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuides();
+  }, [session?.user?.authorId, session?.user?.email, status]);
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* TOP BAR */}
+    <main className="min-h-screen bg-zinc-950 text-white">
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <ProfileHeader />
 
-      <div className="flex justify-between items-center px-10 py-5 border-b border-white/10">
-        <h1 className="font-bold text-xl">Creator Hub</h1>
+        <div className="mt-10">
+          <GuideTabs />
+        </div>
 
-        <button
-          onClick={() => router.push("/create/blog")}
-          className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:scale-105 transition"
-        >
-          Create guide
-        </button>
-      </div>
+        <div className="mt-6">
+          <SearchBar />
+        </div>
 
-      {/* HERO */}
-
-      <section className="h-[430px] flex flex-col justify-center items-center">
-        {/* blinking plus */}
-
-        <button
-          onClick={() => router.push("/create/blog")}
-          className="
-          w-24 h-24
-          rounded-full
-          text-4xl
-          bg-gradient-to-br
-          from-pink-500
-          to-orange-400
-          flex items-center justify-center
-          animate-pulse
-          shadow-lg
-          shadow-pink-500/50
-          hover:scale-110
-          transition
-          "
-        >
-          +
-        </button>
-
-        <h2 className="text-4xl font-bold mt-10">Create beautiful guides.</h2>
-
-        <p className="text-gray-400 mt-3 text-lg">
-          Share your local expertise with others.
-        </p>
-
-        <button
-          onClick={() => router.push("/create/blog")}
-          className="
-          mt-10
-          bg-white
-          text-black
-          px-12
-          py-4
-          rounded-full
-          font-bold
-          hover:scale-105
-          transition
-          "
-        >
-          Create guide
-        </button>
-      </section>
-
-      {/* MOVING PHOTOS */}
-
-      <div className="relative w-full overflow-hidden">
-        <div className="flex gap-8 animate-scroll">
-          {[...images, ...images].map((img, index) => (
-            <div
-              key={index}
-              className="
-              min-w-[350px]
-              h-[230px]
-              rounded-3xl
-              overflow-hidden
-              "
-            >
-              <Image
-                src={img}
-                alt="travel"
-                width={500}
-                height={300}
-                className="
-                w-full
-                h-full
-                object-cover
-                hover:scale-110
-                transition
-                duration-700
-                "
-              />
-            </div>
-          ))}
+        <div className="mt-8">
+          <GuideGrid guides={guides} loading={loading} />
         </div>
       </div>
-    </div>
+    </main>
   );
 }

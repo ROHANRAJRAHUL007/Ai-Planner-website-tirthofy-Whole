@@ -1,7 +1,7 @@
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
-import { FcGoogle } from "react-icons/fc";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { LogOut } from "lucide-react";
 
 export default function SidebarAuthDesign({ open }) {
   const { data: session } = useSession();
@@ -29,16 +29,17 @@ export default function SidebarAuthDesign({ open }) {
           )}
 
           <button
-            onClick={() => signIn("google")}
+            onClick={() => signOut({ callbackUrl: "/" })}
             className="
               w-full mt-3
-              bg-white text-black
+              bg-zinc-900 text-white
               rounded-xl p-3
               flex items-center justify-center gap-2
+              hover:bg-zinc-800 transition-colors
             "
           >
-            <FcGoogle size={20} />
-            {open && "Continue with Google"}
+            <LogOut size={18} />
+            {open && "Logout"}
           </button>
         </>
       )}
